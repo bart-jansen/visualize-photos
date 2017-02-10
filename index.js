@@ -9,6 +9,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 
 var config = require('./config');
+var importToDocDB = require('./import-to-docdb');
 var documentClient = require("documentdb").DocumentClient;
 
 var docDBRef = new documentClient(config.docDBConfig.endpoint, { "masterKey": config.docDBConfig.primaryKey });
@@ -16,6 +17,7 @@ var docDBRef = new documentClient(config.docDBConfig.endpoint, { "masterKey": co
 // if(process.env.NODE_DEV) {
     require('dotenv').config();
 // }
+
 
 // cognitive fns
 /**
@@ -44,6 +46,7 @@ function getCognitiveData(apiType, imgUrl, mediaID) {
         //     authKey = process.env.EMOTION_KEY;
         //     break;
     }
+
     request.post({
         url: endpoint,
         json: true,
@@ -55,11 +58,13 @@ function getCognitiveData(apiType, imgUrl, mediaID) {
     }, function (error, response, body) {
         if (!error) { // if successful req  && response.statusCode == 200
             if(response.body) {
-                console.log(response.body);
+                // console.log(response.body);
                 // var caption = response.body.description.captions[0].text;
                 // console.log('got caption', caption);
 
                 // postToInstagram(console, mediaID, caption)
+
+                importToDocDB.importToDocDB(response.body)
             }
             else {
                 console.log('unable to get caption');
@@ -78,8 +83,6 @@ function getCognitiveData(apiType, imgUrl, mediaID) {
 
 //testing
 getCognitiveData('describe', 'http://www.marketplaceleaders.org/wp-content/uploads/2013/09/893708_10151839045509966_1967887512_o.jpg', null)
-
-
 
 
 
