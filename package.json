@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "dotenv": "^4.0.0",
     "exif": "^0.6.0"
   }
 }
