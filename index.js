@@ -13,9 +13,9 @@ var documentClient = require("documentdb").DocumentClient;
 
 var docDBRef = new documentClient(config.docDBConfig.endpoint, { "masterKey": config.docDBConfig.primaryKey });
 
-if(process.env.NODE_DEV) {
+// if(process.env.NODE_DEV) {
     require('dotenv').config();
-}
+// }
 
 // cognitive fns
 /**
@@ -27,25 +27,37 @@ function getCognitiveData(apiType, imgUrl, mediaID) {
     switch (apiType) {
         case 'vision':
             endpoint = process.env.VISION_ENDPOINT;
-            key = process.env.VISION_KEY;
+            authKey = process.env.VISION_KEY;
             break;
+
+        case 'describe':
+            endpoint = process.env.VISIONDESCRIBE_ENDPOINT
+            authKey = process.env.VISION_KEY;
+            break;
+
+        // case 'face':
+        //     endpoint = process.env.FACE_ENDPOINT;
+        //     authKey = process.env.FACE_KEY;
+        //     break;
+        // case 'emotion':
+        //     endpoint = process.env.EMOTION_ENDPOINT;
+        //     authKey = process.env.EMOTION_KEY;
+        //     break;
     }
-
-    console.log(endpoint)
-
     request.post({
         url: endpoint,
         json: true,
-        body: {"uri" : imgUrl },
+        body: {"url" : imgUrl },
         headers: {
             'Ocp-Apim-Subscription-Key': authKey,
             'Content-Type' : 'application/json'
         }
     }, function (error, response, body) {
-        if (!error && response.statusCode == 200) { // if successful req
-            if(response.body && response.body.description && response.body.description.captions) {
-                var caption = response.body.description.captions[0].text;
-                console.log('got caption', caption);
+        if (!error) { // if successful req  && response.statusCode == 200
+            if(response.body) {
+                console.log(response.body);
+                // var caption = response.body.description.captions[0].text;
+                // console.log('got caption', caption);
 
                 // postToInstagram(console, mediaID, caption)
             }
@@ -65,7 +77,13 @@ function getCognitiveData(apiType, imgUrl, mediaID) {
 
 
 //testing
-getCognitiveData('vision', 'http://www.marketplaceleaders.org/wp-content/uploads/2013/09/893708_10151839045509966_1967887512_o.jpg', null)
+getCognitiveData('describe', 'http://www.marketplaceleaders.org/wp-content/uploads/2013/09/893708_10151839045509966_1967887512_o.jpg', null)
+
+
+
+
+
+
 
 // config.APICalls.forEach(function (colName) {
     app.get('/' + config.docDBConfig.colName, function (req, res) {
