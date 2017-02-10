@@ -13,7 +13,9 @@ var documentClient = require("documentdb").DocumentClient;
 
 var docDBRef = new documentClient(config.docDBConfig.endpoint, { "masterKey": config.docDBConfig.primaryKey });
 
-
+if(process.env.NODE_DEV) {
+    require('dotenv').config();
+}
 
 // cognitive fns
 /**
@@ -29,10 +31,12 @@ function getCognitiveData(apiType, imgUrl, mediaID) {
             break;
     }
 
+    console.log(endpoint)
+
     request.post({
         url: endpoint,
         json: true,
-        body: {"url" : imgUrl },
+        body: {"uri" : imgUrl },
         headers: {
             'Ocp-Apim-Subscription-Key': authKey,
             'Content-Type' : 'application/json'
@@ -50,7 +54,7 @@ function getCognitiveData(apiType, imgUrl, mediaID) {
             }
         }
         else {
-            console.log('error', response.body);
+            console.log('error', error);
         }
     });
 }
@@ -60,8 +64,8 @@ function getCognitiveData(apiType, imgUrl, mediaID) {
 
 
 
-
-
+//testing
+getCognitiveData('vision', 'http://www.marketplaceleaders.org/wp-content/uploads/2013/09/893708_10151839045509966_1967887512_o.jpg', null)
 
 // config.APICalls.forEach(function (colName) {
     app.get('/' + config.docDBConfig.colName, function (req, res) {
