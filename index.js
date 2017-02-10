@@ -19,14 +19,22 @@ var docDBRef = new documentClient(config.docDBConfig.endpoint, { "masterKey": co
 /**
  * Use MS Cognitive Services to obtain caption for specified @param imgUrl
  */
-function getVisionCaption(context, imgUrl, mediaID) {
+function getCognitiveData(apiType, imgUrl, mediaID) {
+    var endpoint, authKey;
+    // todo: un-switch
+    switch (apiType) {
+        case 'vision':
+            endpoint = process.env.VISION_ENDPOINT;
+            key = process.env.VISION_KEY;
+            break;
+    }
 
     request.post({
-        url: oxfordApi,
+        url: endpoint,
         json: true,
         body: {"url" : imgUrl },
         headers: {
-            'Ocp-Apim-Subscription-Key': process.env.VISION_KEY,
+            'Ocp-Apim-Subscription-Key': authKey,
             'Content-Type' : 'application/json'
         }
     }, function (error, response, body) {
@@ -54,15 +62,16 @@ function getVisionCaption(context, imgUrl, mediaID) {
 
 
 
+
 // config.APICalls.forEach(function (colName) {
-    app.get('/' + colName, function (req, res) {
+    app.get('/' + config.docDBConfig.colName, function (req, res) {
 
         docDBRef.readDocuments('dbs/' + config.docDBConfig.dbName + '/colls/' + config.docDBConfig.colName).toArray(function (error, allItems) {
             res.json(allItems);
         });
     });
 
-    app.get('/' + colName + '/:itemId', function (req, res) {
+    app.get('/' + config.docDBConfig.colName + '/:itemId', function (req, res) {
         var querySpec = {
             query: 'SELECT * FROM c WHERE c.oid= @oid',
             parameters: [
@@ -73,16 +82,16 @@ function getVisionCaption(context, imgUrl, mediaID) {
             ]
         };
 
-        docDBRef.queryDocuments('dbs/' + config.docDBConfig.dbName + '/colls/' + colName, querySpec).toArray(function (err, results) {
+        docDBRef.queryDocuments('dbs/' + config.docDBConfig.dbName + '/colls/' + config.docDBConfig.colName, querySpec).toArray(function (err, results) {
             res.json(results);
         });
     });
 
 
-    app.post('/' + colName, function (req, response) {
+    app.post('/' + config.docDBConfig.colName, function (req, response) {
         if (req.body) {
             console.log('posting to db');
-            docDBRef.createDocument('dbs/' + config.docDBConfig.dbName + '/colls/' + colName, req.body, function (docErr, docRes) {
+            docDBRef.createDocument('dbs/' + config.docDBConfig.dbName + '/colls/' + config.docDBConfig.colName, req.body, function (docErr, docRes) {
                 response.json(req.body);
             });
         }
