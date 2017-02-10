@@ -20,7 +20,7 @@ walker.on('file', function (root, stat, next) {
   let name = root + '/' + stat.name
   files.push(name);
     var tmp = name.split('.')
-    
+
 
     if (PIC_FORMATS.indexOf( tmp[tmp.length -1].toLowerCase()) > -1 ){
       try {
@@ -65,3 +65,4 @@ function resize(){
   cb(null,picsList)
 }
 
+module.exports = createTree
