@@ -14,6 +14,46 @@ var documentClient = require("documentdb").DocumentClient;
 var docDBRef = new documentClient(config.docDBConfig.endpoint, { "masterKey": config.docDBConfig.primaryKey });
 
 
+
+// cognitive fns
+/**
+ * Use MS Cognitive Services to obtain caption for specified @param imgUrl
+ */
+function getVisionCaption(context, imgUrl, mediaID) {
+
+    request.post({
+        url: oxfordApi,
+        json: true,
+        body: {"url" : imgUrl },
+        headers: {
+            'Ocp-Apim-Subscription-Key': process.env.VISION_KEY,
+            'Content-Type' : 'application/json'
+        }
+    }, function (error, response, body) {
+        if (!error && response.statusCode == 200) { // if successful req
+            if(response.body && response.body.description && response.body.description.captions) {
+                var caption = response.body.description.captions[0].text;
+                console.log('got caption', caption);
+
+                // postToInstagram(console, mediaID, caption)
+            }
+            else {
+                console.log('unable to get caption');
+            }
+        }
+        else {
+            console.log('error', response.body);
+        }
+    });
+}
+
+
+
+
+
+
+
+
 // config.APICalls.forEach(function (colName) {
     app.get('/' + colName, function (req, res) {
 
