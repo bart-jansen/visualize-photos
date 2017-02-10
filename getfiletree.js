@@ -8,8 +8,12 @@ var picsList = [];
 
 const PIC_FORMATS =['png','jpg','jpeg']
 
+
+function createTree(picPath,cb){
+
+
 // Walker options
-var walker = walk.walk('./', { followLinks: false });
+var walker = walk.walk(picPath, { followLinks: false });
 
 walker.on('file', function (root, stat, next) {
   // Add this file to the list of files
@@ -46,15 +50,18 @@ walker.on('end', function () {
 });
 
 function resize(){
-  picsList.forEach(function(element) {
-    var tmp = element.path
+  for(let i; i < picsList.length;i++) {
+    var tmp = picsList[i].path
     tmp = tmp.split('.')
 
-    var newFilePath = './tumpsmall/'.replace('\'','') + element.tumpId +'.'+ tmp[tmp.length-1]
-    Sharp(element.path)
+    var newFilePath = picPath+'/tumpsmall/'.replace('\'','') + picsList[i].tumpId +'.'+ tmp[tmp.length-1]
+    Sharp(picsList[i].path)
     .resize(120,120)
     .max()
     .toFile(newFilePath)
     console.log(newFilePath)
-  }, this);
+  };
 }
+  cb(null,picsList)
+}
+
