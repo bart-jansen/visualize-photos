@@ -9,7 +9,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "body-parser": "^1.16.0",
+    "documentdb": "^1.10.2",
     "dotenv": "^4.0.0",
-    "exif": "^0.6.0"
+    "exif": "^0.6.0",
+    "nodemon": "^1.11.0",
+    "request": "^2.79.0"
   }
 }
